@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'thaidate',
     'crispy_forms',
     'django.contrib.humanize',
+    'whitenoise.runserver_nostatic',
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 MIDDLEWARE = [
@@ -83,10 +84,6 @@ DATABASES = {
         'PASSWORD':'k03062535',
         'HOST':'sarawut-2295.postgres.pythonanywhere-services.com',
         'PORT':'12295',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'charset': 'utf8',
-        }
     }
 }
 # Database
@@ -130,8 +127,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [Path.joinpath(BASE_DIR,'static')]
+STATIC_ROOT = Path.joinpath(BASE_DIR, 'staticfiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 MEDIA_URL = '/media/'
