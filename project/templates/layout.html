@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel ="stylesheet" type="text/css" href="{% static 'css/font.css' %}">
+    <link rel ="stylesheet" type="text/css" href="{% static 'css/jquery.dataTables.css' %}">
+    <link rel ="stylesheet" type="text/css" href="{% static 'css/layout.css' %}">
+    <link rel ="stylesheet" type="text/css" href="{% static 'css/dropdownmenu.css' %}">
+    <link rel ="stylesheet" type="text/css" href="{% static 'css/cropper.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <title>โรงเรียนการุ้งวิทยาคม</title>
+    <style>
+      
+      </style>
+  </head>
+  <body>
+    <input hidden class = "form-check-input" type="checkbox" id="check" style="left:300px;">
+    <div id="mySidebar" class="sidebar headFont" align = "left">
+
+      <div id = "sidebarmenu" style = "font-size: 5px;">
+        <div id = "ham">
+        <label for="check"><i type = "button" class="fas fa-bars" id="sidebar_btn"></i></label>
+      </div>
+      <div id = "cpropic" align = "center">
+        <img id = "propic" src = "{{request.session.pic}}">
+      </div>
+      <hr class = 'new1'>
+        <ui class = "headFontsmall">
+      <li><a class = "sidetext" href = ""><i class="fas fa-user"></i><span>{{request.session.user.1}}{{request.session.user.2}} {{request.session.user.3}}</span></a></li>
+      <li><a class = "sidetext" href = "/"><i class="fa fa-home" aria-hidden="true"></i><span>หน้าแรก</span></a></li>
+      <li><a class = "sidetext dropbtn" href='javascript:;' onclick='clickdrop(0);' ><i class="fas fa-chart-line"></i><span>กิจกรรมและโครงการ <i class="fas fa-caret-down"></i></span></a></li>
+      <div class="dropdown">
+        <div class="dropdown-content">
+          <a hidden class = "sidetext side-content" href = "/project/offer"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>เสนอขอใช้เงิน</span></a></li>
+          <a class = "dsidetext side-content" href = "/project/checkminor"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>ข้อมูลกิจกรรม</span></a></li>
+          <a class = "dsidetext side-content" href = "/project/uselist"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>รายการใช้เงินทั้งหมด</span></a></li>
+          <a class = "dsidetext side-content" href = "/project/minorlist"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>รายชื่อกิจกรรมที่เสนอ</span></a></li>
+        </div>
+      </div>
+      <li><a class = "sidetext dropbtn" href='javascript:;' onclick='clickdrop(1);' ><i class="fas fa-users"></i><span>บุคลากร <i class="fas fa-caret-down"></i></span></a></li>
+      <div class="dropdown">
+        <div class="dropdown-content">
+          <a class = "dsidetext side-content" href = "/teacher/profile"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>ข้อมูลส่วนตัว</span></a></li>
+          <a class = "dsidetext side-content" href = "/teacher/allteacher"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>รายชื่อบุคลากรโรงเรียน</span></a></li>
+        </div>
+      </div>
+      <li><a class = "sidetext dropbtn" href='javascript:;' onclick='clickdrop(2);' ><i class="fas fa-user-graduate"></i><span>นักเรียน <i class="fas fa-caret-down"></i></span></a></li>
+      <div class="dropdown">
+        <div class="dropdown-content">
+          <a class = "dsidetext side-content" href = "/student/stdata"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>ข้อมูลนักเรียน</span></a></li>
+          <a class = "dsidetext side-content" href = "/student/checkname"style="margin-left: 30px;"><i class="fas fa-angle-double-right"></i><span>เช็คชื่อ</span></a></li>
+        </div>
+      </div>
+      <li><a class = "sidetext" href = "/teacher/sgs"><i class="fas fa-network-wired"></i><span>SGS</span></a></li>
+      {% if request.session.user.14 == '3' or request.session.user.14 == '2' %}
+      <li><a class = "sidetext" href = "/project/manage"><i  class="fas fa-wrench"></i><span>ระบบจัดการ</span></a></li>
+      {% endif %}
+      <hr class = 'new1'>
+      <li><a class = "sidetext" href = "/logout"><i class="fas fa-sign-out-alt"></i><span>ออกจากระบบ</span></a></li>
+    </ui>
+    </div>
+    </div>
+    <div class="headtop">
+      <div class="container-fluid" >
+        <a href="#"><img src="{% static 'images/logo4.png' %}" alt="" style="width: 350px;"></a>
+         </div>
+         <div id = "hidham">
+         <label for="check"><i type = "button" class="fas fa-bars" id="sidebar_btn" style="color: brown;"></i></label>
+        </div>
+    </div>
+
+
+    <!-- content-->
+    <div class="container-fluid" id = "main">
+
+              {% block content %}
+              {% endblock %}
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.dataTables.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/cropper.js' %}"></script>
+    {% block javascript %}
+    {% endblock %}
+    <script>
+      $(document).ready( function () {
+    $('#myTable').DataTable();
+} );
+$(document).ready( function () {
+    $('.myTable').DataTable();
+} );
+      // Example starter JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
+function Cdisorder() {
+  var x = document.getElementById("checkdisorder");
+  var y = document.getElementById("disorder");
+  if (x.checked == true){
+    y.style.display = "block";
+  } else{
+    y.style.display = "none";
+  }
+}
+function Cdisorder() {
+  var x = document.getElementById("checkdisorder");
+  var y = document.getElementById("disorder");
+  if (x.checked == true){
+    y.style.display = "block";
+  } else{
+    y.style.display = "none";
+  }
+}
+function Gopage2(){
+    if($("#the-form")[0].checkValidity()) {
+        alert('validated');
+    }
+    else {
+        $("#the-form")[0].reportValidity();
+    }
+  }
+  $(document).ready(function(){
+        $('#data').after('<div id="nav"></div>');
+        var rowsShown = 10;
+        var rowsTotal = $('#data tbody tr').length;
+        var numPages = rowsTotal/rowsShown;
+        for(i = 0;i < numPages;i++) {
+            var pageNum = i + 1;
+            $('#nav').append('<a class = "btn btn-outline-primary" href="#" rel="'+i+'">'+pageNum+'</a> ');
+        }
+        $('#data tbody tr').hide();
+        $('#data tbody tr').slice(0, rowsShown).show();
+        $('#nav a:first').addClass('active');
+        $('#nav a').bind('click', function(){
+
+            $('#nav a').removeClass('active');
+            $(this).addClass('active');
+            var currPage = $(this).attr('rel');
+            var startItem = currPage * rowsShown;
+            var endItem = startItem + rowsShown;
+            $('#data tbody tr').css('opacity','0.0').hide().slice(startItem, endItem).
+                    css('display','table-row').animate({opacity:1}, 300);
+        });
+    });
+      function clickdrop(i) {
+          var x = document.getElementsByClassName('dropdown-content');
+          var y = document.getElementsByClassName('dropdown');
+          var drop = window.getComputedStyle(y[i], null).getPropertyValue("display");
+          var theCSSprop = window.getComputedStyle(x[i], null).getPropertyValue("display");
+          if (theCSSprop == "none"){
+            y[i].style.display = "inline-block";
+            x[i].style.display = "contents";
+          }
+          else{
+            y[i].style.display = "none";
+            x[i].style.display = "none";
+          }
+        }
+    </script>
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-q2kxQ16AaE6UbzuKqyBE9/u/KzioAlnx2maXQHiDX9d4/zp8Ok3f+M7DPm+Ib6IU" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.min.js" integrity="sha384-pQQkAEnwaBkjpqZ8RU1fF1AKtTcHJwFl3pblpTlHXybJjHpMYo79HY3hIi4NKxyj" crossorigin="anonymous"></script>
+    -->
+    
+  </body>
+  <footer class = "footer">
+
+    </footer>
+</html>

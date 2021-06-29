@@ -1,0 +1,567 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% load crispy_forms_tags %} 
+<style>
+
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'allteacher' %}">รายชื่อบุคลากร</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a>ข้อมูลส่วนตัว (ผู้ดูแลระบบ)</a></li>
+  </ol>
+</nav>
+{% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+      {{msg}} 
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+<div class="row">
+  <div class="col-sm-2">
+    <div class = "card text-center ">
+      <img class="card-img-top" src = "{{data.image_file.url}}"  >
+      <div class="card-body">
+        <h5 class="card-title">{{data.fname}} {{data.lname}}</h5>
+        {% if age %}
+        <p>อายุ {{age}} ปี</p>
+        {% endif %}
+          <!-- FORM TO UPLOAD THE IMAGES -->
+      <form method="post" enctype="multipart/form-data" id="formUpload">
+        {% csrf_token %}
+        <input value = 'addpic' name = 'how' hidden>
+        <button class="btn btn-danger " id = 'changepicture' type="button">เปลี่ยนรูปประจำตัว</button>
+        <div class="alert alert-primary" style="display: none;" id = 'changepic'  role="alert">
+          {{pp}}
+      
+        </div>
+        
+      </form>
+      <!-- MODAL TO CROP THE IMAGE -->
+      <div class="modal fade" id="modalCrop">
+        <div class="modal-dialog modal-fullscreen">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">ปรับขนาด</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <img src="" id="image" style="max-width: 100%;">
+            </div>
+            <div class="modal-footer">
+              <div class="btn-group pull-left" role="group">
+                <button type="button" class="btn btn-light js-zoom-in">
+                  <i class="fas fa-search-plus"></i>
+                </button>
+                <button type="button" class="btn btn-light js-zoom-out">
+                  <i class="fas fa-search-minus"></i>
+                </button>
+              </div>
+              <button type="button" class="btn btn-default" data-bs-dismiss="modal">ปิด</button>
+              <button type="button" class="btn btn-primary js-crop-and-upload">ตัดภาพและอัพโหลด</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+  </div>
+</div>
+
+
+  <div class="col-sm-10">
+    <div class = "card " style="min-height: 600px;">
+        <div class="card-header ">
+        <ul class="nav nav-pills" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href = "#general" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">ข้อมูลทั่วไป</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href = "#edu" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">การศึกษา</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href = "#qua" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">ตำแหน่ง/วิทยฐานะ</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="doc-tab" data-bs-toggle="tab" href = "#doc" data-bs-target="#doc" type="button" role="tab" aria-controls="doc" aria-selected="false">เอกสาร/หลักฐาน</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="tab-content" id="myTabContent">
+    
+    <!-- tab1 --><div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <form  method="POST">
+              {% csrf_token %}
+              <input value = 'addger' name = 'how' hidden>
+              <table class="table align-middle table-sm table-borderless">
+                <tbody>
+                  {% for i in df %}
+                  <tr>
+                    <td class="tbold">{{i.label}}</td>
+                    <td>{{i}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <button type = "submit" formaction="" class="btn btn-primary">บันทึก</button>
+            </form>
+          </div>
+    
+    <!-- tab2 --><div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="text-white bg-danger ">
+            <tr>
+              <td class="tbold">ระดับ</td>
+              <td class="tbold">วุฒิการศึกษา</td>
+              <td class="tbold">สถาบัน</td>
+              <td class="tbold">ปีที่จบ</td>
+              <td class="tbold">จัดการ</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in education %}
+            <tr>
+              <td>{{e.degree}}</td>
+              <td>{{e.qualification}} ({{e.initials}})</td>
+              <td>คณะ: {{e.major}} <br>สาขา: {{e.minor}} <br>สถาบัน: {{e.institution}}</td>
+              <td>{{e.year_end}}</td>
+              <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editedu{{e.id}}">แก้ไข</button>
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deledu{{e.id}}">ลบ</button>
+
+                <!-- edit Modal -->
+              <div class="modal fade" id="editedu{{e.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">แก้ไขข้อมูล</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form method = "POST" action="">
+                        {% csrf_token %}
+                        <input name = "eid" value = "{{e.id}}" hidden>
+                        <input name = "how" value = "edu_edit" hidden>
+
+                      <div>
+                        <label>ระดับการศึกษา</label>
+                        <select class = "form-select" name = "e_degree">
+                          <option selected value="{{e.degree}}">{{e.degree}}</option>
+                          <option value="ปริญญาตรี">ปริญญาตรี</option>
+                          <option value="ปริญญาโท">ปริญญาโท</option>
+                          <option value="ปริญญาเอก">ปริญญาเอก</option>
+                          <option value="อื่น ๆ">อื่น ๆ</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label>วุฒิการศึกษา</label>
+                        <input type = "text" class = "form-control" name = "e_qualification" value = "{{e.qualification}}">
+                      </div>
+                      <div>
+                        <label>ตัวย่อ (วุฒิการศึกษา)</label>
+                        <input type = "text" class = "form-control" name = "e_initials" value = "{{e.initials}}">
+                      </div>
+                      <div>
+                        <label>สถาบันที่จบ</label>
+                        <input type = "text" class = "form-control" name = "e_institution" value = "{{e.institution}}">
+                      </div>
+                      <div>
+                        <label>คณะ</label>
+                        <input type = "text" class = "form-control" name = "e_major" value = "{{e.major}}">
+                      </div>
+                      <div>
+                        <label>สาขา</label>
+                        <input type = "text" class = "form-control" name = "e_minor" value = "{{e.minor}}">
+                      </div>
+                      <div>
+                        <label>ปีที่จบ (พ.ศ.)</label>
+                        <input type = "number" class = "form-control" name = "e_year_end" value = "{{e.year_end}}">
+                      </div>
+                      </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                      <button type="submit" class="btn btn-primary">บันทึก</button>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+               <!-- del Modal -->
+               <div class="modal fade" id="deledu{{e.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">แจ้งเตือน</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form method = "POST" action="">
+                        {% csrf_token %}
+                        <input name = "eid" value = "{{e.id}}" hidden>
+                        <input name = "how" value = "edu_del" hidden>
+
+                      คุณต้องการลบข้อมูลใช่หรือไม่
+                      
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                      <button type="submit" class="btn btn-primary">ใช่</button>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">ไม่มีข้อมูล</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addedu">เพิ่ม</button>
+      </div>
+        <!-- Modal -->
+      <div class="modal fade" id="addedu" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">เพิ่มข้อมูลการศึกษา</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <input value = 'addedu' name = 'how' hidden>
+                <table class="table table-hover align-middle table-sm">
+                  <tbody>
+                    {% for i in edu %}
+                    <tr>
+                      <td><strong>{{i.label}}</strong></td>
+                      <td>{{i}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+              <button type="submit" class="btn btn-primary">บันทึก</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- tab3 --><div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="bg-danger text-white">
+            <tr>
+              <td class="tbold">ตำแหน่ง</td>
+              <td class="tbold">วิทยฐานะ</td>
+              <td class="tbold">ชื่อ</td>
+              <td class="tbold">วันที่ได้รับ</td>
+              <td class="tbold">จัดการ</td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rank %}
+            <tr>
+              <td>{{r.level}}</td>
+              <td>{{r.rank}}</td>
+              <td>{{r.rank_name}}</td>
+              <td>{{r.date}}</td>
+              <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editrank{{r.id}}">แก้ไข</button>
+                <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delrank{{r.id}}">ลบ</button>
+                <!-- edit Modal -->
+              <div class="modal fade" id="editrank{{r.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">แก้ไขข้อมูล</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form method = "POST" action="">
+                        {% csrf_token %}
+                        <input name = "rid" value = "{{r.id}}" hidden>
+                        <input name = "how" value = "rank_edit" hidden>
+
+                      <div>
+                        <label>ตำแหน่ง</label>
+                        <select class = "form-select" name = "e_level">
+                          <option selected value="{{r.level}}">{{r.level}}</option>
+                          <option value="ครูผู้ช่วย">ครูผู้ช่วย</option>
+                          <option value="ครู">ครู</option>
+                          <option value="ผู้อำนวยการโรงเรียน">ผู้อำนวยการโรงเรียน</option>
+                          <option value="รองผู้อำนวยการโรงเรียน">รองผู้อำนวยการโรงเรียน</option>
+                          <option value="พนักงานราชการ">พนักงานราชการ</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label>วิทยฐานะ</label>
+                        <select class = "form-select" name = "e_rank" value = "{{r.rank}}">
+                          <option selected value="{{r.rank}}">...{{r.rank}}...</option>
+                          <option value="ไม่มี">ไม่มี</option>
+                          <option value="คศ.1">คศ.1</option>
+                          <option value="คศ.2">คศ.2</option>
+                          <option value="คศ.3">คศ.3</option>
+                          <option value="คศ.4">คศ.4</option>
+                          <option value="คศ.5">คศ.5</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label>ชื่อวิทยฐานะ</label>
+                        <select class = "form-select" name = "e_rank_name">
+                          <option selected value="{{r.rank_name}}">...{{r.rank_name}}...</option>
+                          <option value="ไม่มี">ไม่มี</option>
+                          <option value="ชำนาญการ">ชำนาญการ</option>
+                          <option value="ชำนาญการพิเศษ">ชำนาญการพิเศษ</option>
+                          <option value="เชี่ยวชาญ">เชี่ยวชาญ</option>
+                          <option value="เชี่ยวชาญพิเศษ">เชี่ยวชาญพิเศษ</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label>วันที่ได้รับ</label>
+                        <input type = "date" class = "form-control" name = "e_date" value = "{{r.date|date:'Y-m-d'}}">
+                      </div>
+                      </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                      <button type="submit" class="btn btn-primary">บันทึก</button>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- del Modal -->
+              <div class="modal fade" id="delrank{{r.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">แจ้งเตือน</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form method = "POST" action="">
+                        {% csrf_token %}
+                        <input name = "rid" value = "{{r.id}}" hidden>
+                        <input name = "how" value = "rank_del" hidden>
+
+                      คุณต้องการลบข้อมูลใช่หรือไม่
+                      
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                      <button type="submit" class="btn btn-primary">ใช่</button>
+                    </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3">ไม่มีข้อมูล</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addqua">เพิ่ม</button>
+      </div>
+        <!-- Modal -->
+      <div class="modal fade" id="addqua" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">เพิ่มข้อมูลวิทยฐานะ</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="" method="POST">
+                {% csrf_token %}
+                <input value = 'addqua' name = 'how' hidden>
+                <table class="table table-hover align-middle table-sm">
+                  <tbody>
+                    {% for i in rank_form %}
+                    <tr>
+                      <td><strong>{{i.label}}</strong></td>
+                      <td>{{i}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+              <button type="submit" class="btn btn-primary">บันทึก</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- tab4 --><div class="tab-pane fade" id="doc" role="tabpanel" aria-labelledby="doc-tab">
+      <div>
+      <a type="button" class="btn btn-primary" href = "{% url 'documentsad' data.id %}">อัพโหลดเอกสาร</a>
+      {% for i in doc_list %}
+      <div class="card calloutblue">
+        <h5>{{forloop.counter}}. {{i.0}}</h5>
+        {% for j in i.1 %}
+        <div>
+        <a class = "btn btn-outline-danger" href="{{j.doc_file.url}}" target="_blank">{{forloop.counter}}) คลิกเพื่อดู <i class="fas fa-file-alt"></i></a>
+      </div>
+      {% empty %}
+      -
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+{% block javascript %}
+  <script>
+
+    $(document).ready( function() {
+
+// Save last active tab to sessionStorage
+$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+    try {
+        sessionStorage.setItem('lastTab', $(this).attr('href'));
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+// Get last active tab from sesssionStorage and go there
+var lastTab = sessionStorage.getItem('lastTab');
+if (lastTab) {
+    $('[href="' + lastTab + '"]').tab('show');
+}
+
+});
+    var triggerTabList = [].slice.call(document.querySelectorAll('#myTab a'))
+triggerTabList.forEach(function (triggerEl) {
+  var tabTrigger = new bootstrap.Tab(triggerEl)
+
+  triggerEl.addEventListener('click', function (event) {
+    event.preventDefault()
+    tabTrigger.show()
+  })
+})
+  $( document ).ready(function() {
+    $('#changepicture').on("click",function(){
+      var a= $('#changepic');
+      if (a.css('display') == 'none'){
+        a.css("display", "block");
+      }
+      else {
+        a.css("display", "none");
+      }
+      
+    });
+});
+    $(function () {
+
+      /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+$("#id_image_file").change(function () {
+
+  if (this.files && this.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      
+      $("#image").attr("src", e.target.result);
+      $("#modalCrop").modal("show");
+    }
+    reader.readAsDataURL(this.files[0]);
+  }
+});
+
+      /* SCRIPTS TO HANDLE THE CROPPER BOX */
+var $image = $("#image");
+var cropBoxData;
+var canvasData;
+$("#modalCrop").on("shown.bs.modal", function () {
+  $image.cropper("destroy");
+  $image.cropper({
+    viewMode: 1,
+    aspectRatio: 3.2/4,
+    minCropBoxWidth: 200,
+    minCropBoxHeight: 200,
+    ready: function () {
+      $image.cropper("setCanvasData", canvasData);
+      $image.cropper("setCropBoxData", cropBoxData);
+    }
+  });
+}).on("hidden.bs.modal", function () {
+  cropBoxData = $image.cropper("getCropBoxData");
+  canvasData = $image.cropper("getCanvasData");
+  $image.cropper("destroy");
+});
+
+// Enable zoom in button
+$(".js-zoom-in").click(function () {
+  $image.cropper("zoom", 0.1);
+});
+
+// Enable zoom out button
+$(".js-zoom-out").click(function () {
+  $image.cropper("zoom", -0.1);
+});
+
+      /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+$(".js-crop-and-upload").click(function () {
+  var cropData = $image.cropper("getData");
+  $("#id_x").val(cropData["x"]);
+  $("#id_y").val(cropData["y"]);
+  $("#id_height").val(cropData["height"]);
+  $("#id_width").val(cropData["width"]);
+  $("#formUpload").submit();
+});
+
+    });
+  </script>
+{% endblock %}

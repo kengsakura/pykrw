@@ -1,0 +1,70 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'checkminor' %}">ตรวจสอบกิจกรรม</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'detailminor' data_minor.id %}">รายละเอียดกิจกรรม</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a>แก้ไขรายละเอียดกิจกรรม</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top ">
+<h3>แก้ไขรายละเอียดกิจกรรม</h3>
+<h5>กิจกรรม {{data_minor.name}}</h5>
+<hr>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<form method="post" action="">
+  {% csrf_token %}
+<div class="row">
+  <table class="table table-bordered table-responsive">
+    {% for f in form %}
+    <tr>
+      <th>{{f.label}}</th>
+      <td>{{f}}</td>
+  </tr>
+    {% endfor %}
+  </table>
+  <div>
+  <br>
+  <button type = "submit" class="btn btn-primary">บันทึก</button>
+</div>
+</div>
+</form>
+<hr>
+
+</div>
+{% endblock %}

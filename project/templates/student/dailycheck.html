@@ -1,0 +1,229 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% load crispy_forms_tags %} 
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'checkname'  %}">เลือกวิชา</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a>เช็คชื่อ {{s.subject_id}}</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<h3>แบบเช็คการมาเรียนของนักเรียน</h3>
+<hr>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div align = "left">
+<div>รายวิชา: {{s.name}}</div>
+<div>รหัสวิชา: {{s.subject_id}}</div>
+<div>นักเรียนชั้น ม: {{s.classroom}}/{{s.room}}</div>
+</div>
+<div class="row">
+  <div class="col">
+    <form method="POST" action="">
+      {% csrf_token %}
+    <div class="alert alert-primary" role="alert">
+      <label>เลือกวันที่</label>
+      <input class = "form-control" type="date" name = "date" required>
+    </div>
+<div class="table-responsive-sm">
+  <table class="table table-bordered text-center">
+    <thead class="bg-dark text-white">
+      <tr class="align-middle">
+        <th rowspan="2">ที่</th>
+        <th rowspan="2">ชื่อ-สกุล</th>
+        <th colspan="4">เช็ค</th>
+      </tr>
+      <tr>
+      <th>มา</th>
+      <th>ขาด</th>
+      <th>ลาป่วย</th>
+      <th>ลากิจ</th>
+    </tr>
+    </thead>
+    <tbody>
+      {% for n in student_name %}
+      <tr>
+        <td>{{forloop.counter}}</td>
+        <td align="left">{{n.title}}{{n.fname}} {{n.lname}}</td>
+        <td><input class= "form-check-input" type="radio"  id = "check1_{{n.id}}" name = "check{{n.id}}" value="มา" checked></td>
+        <td><input class= "form-check-input" type="radio"  id = "check2_{{n.id}}" name = "check{{n.id}}" value="ขาด"></td>
+        <td><input class= "form-check-input" type="radio" id = "check3_{{n.id}}" name = "check{{n.id}}"  value="ลาป่วย"></td>
+        <td><input class= "form-check-input" type="radio" id = "check4_{{n.id}}" name = "check{{n.id}}" value="ลากิจ"></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<button type = "submit" class="btn btn-primary">บันทึก</button>
+</form>
+</div>
+<div class="col">
+<div>
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>ที่</th>
+        <th>วันที่</th>
+        <th>ชื่อ-สกุล</th>
+        <th>สถานะ</th>
+        <th>จัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in listhistory %}
+      <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{j.date|date:'d/m/Y'}}</td>
+        <td>{{j.fullname}}</td>
+        <td>{{j.status}}</td>
+        <td><a class="btn btn-danger btn-sm" href="{% url 'delcheck' j.id s.id %}"><i class="fas fa-trash-alt"></i></a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" align="center">ไม่มีข้อมูล</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+</div>
+    </div>
+</div>
+
+{% endblock %}
+{% block javascript %}
+  <script>
+    $(document).ready( function() {
+
+// Save last active tab to sessionStorage
+$('a[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+    try {
+        sessionStorage.setItem('lastTab', $(this).attr('href'));
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+// Get last active tab from sesssionStorage and go there
+var lastTab = sessionStorage.getItem('lastTab');
+if (lastTab) {
+    $('[href="' + lastTab + '"]').tab('show');
+}
+
+});
+    var triggerTabList = [].slice.call(document.querySelectorAll('#myTab a'))
+triggerTabList.forEach(function (triggerEl) {
+  var tabTrigger = new bootstrap.Tab(triggerEl)
+
+  triggerEl.addEventListener('click', function (event) {
+    event.preventDefault()
+    tabTrigger.show()
+  })
+})
+  $( document ).ready(function() {
+    $('#changepicture').on("click",function(){
+      var a= $('#changepic');
+      if (a.css('display') == 'none'){
+        a.css("display", "block");
+      }
+      else {
+        a.css("display", "none");
+      }
+      
+    });
+});
+    $(function () {
+
+      /* SCRIPT TO OPEN THE MODAL WITH THE PREVIEW */
+$("#id_path").change(function () {
+
+  if (this.files && this.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      
+      $("#image").attr("src", e.target.result);
+      $("#modalCrop").modal("show");
+    }
+    reader.readAsDataURL(this.files[0]);
+  }
+});
+
+      /* SCRIPTS TO HANDLE THE CROPPER BOX */
+var $image = $("#image");
+var cropBoxData;
+var canvasData;
+$("#modalCrop").on("shown.bs.modal", function () {
+  $image.cropper({
+    autoCropArea: 0.5,
+    viewMode: 1,
+    aspectRatio: 3.2/4,
+    minCropBoxWidth: 200,
+    minCropBoxHeight: 200,
+    ready: function () {
+      $image.cropper("setCanvasData", canvasData);
+      $image.cropper("setCropBoxData", cropBoxData);
+    }
+  });
+}).on("hidden.bs.modal", function () {
+  cropBoxData = $image.cropper("getCropBoxData");
+  canvasData = $image.cropper("getCanvasData");
+  $image.cropper("destroy");
+});
+
+// Enable zoom in button
+$(".js-zoom-in").click(function () {
+  $image.cropper("zoom", 0.1);
+});
+
+// Enable zoom out button
+$(".js-zoom-out").click(function () {
+  $image.cropper("zoom", -0.1);
+});
+
+      /* SCRIPT TO COLLECT THE DATA AND POST TO THE SERVER */
+$(".js-crop-and-upload").click(function () {
+  var cropData = $image.cropper("getData");
+  $("#id_x").val(cropData["x"]);
+  $("#id_y").val(cropData["y"]);
+  $("#id_height").val(cropData["height"]);
+  $("#id_width").val(cropData["width"]);
+  $("#formUpload").submit();
+});
+
+    });
+  </script>
+{% endblock %}

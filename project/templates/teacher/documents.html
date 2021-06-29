@@ -1,0 +1,130 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% load crispy_forms_tags %} 
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'profile' %}">ข้อมูลส่วนตัว</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a>อัพโหลดเอกสาร</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<h3>อัพโหลดเอกสาร</h3>
+<hr>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="row">
+  <div class="col-sm-6">
+    <h5>เอกสารที่มี</h5>
+    <div>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ที่</th>
+          <th>ประเภทเอกสาร</th>
+          <th>เอกสาร</th>
+          <th>วันที่อัพโหลด</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in doc_data %}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{d.type_doc}}</td>
+          <td><a href = "{{d.doc_file.url}}" target="_blank">คลิกเพื่อดู</a></td>
+          <td>{{d.timestamp}}</td>
+          <td><button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#del{{d.id}}">ลบ</button>
+              <!-- Modal -->
+  <div class="modal fade" id="del{{d.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">แจ้งเตือน</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          คุณต้องการลบข้อมูลใช่หรือไม่
+          <form action="" method="POST">
+            {% csrf_token %}
+            <input value = 'del' name = 'how' hidden>
+            <input value = '{{d.id}}' name = 'id' hidden>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+          <button type="submit" class="btn btn-primary">ใช่</button>
+        </form>
+        </div>
+      </div>
+    </div>
+  </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" align="center">ไม่มีข้อมูล</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  </div>
+  <div class="col-sm-6">
+    <h5>เพิ่มเอกสาร</h5>
+    <div class="alert alert-primary" role="alert">
+      <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+      {% for form in forms %}
+      <div>{{form.label}}</div>
+      <div>{{form}}</div>
+      {% endfor %}
+      <div>
+        <button type="submit" class="btn btn-primary">อัพโหลด</button>
+      </div>
+    </form>
+    </div>
+    
+  </div>
+
+</div>
+</div>
+</div>
+{% endblock %}
+{% block javascript %}
+  <script>
+  
+  
+  </script>
+{% endblock %}

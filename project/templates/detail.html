@@ -1,0 +1,105 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'checkminor' %}">ตรวจสอบกิจกรรม</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a >รายละเอียดกิจกรรม</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top ">
+<h3>รายละเอียดกิจกรรม</h3>
+<hr>
+<form>
+<div class="row">
+
+  <div class = "col-sm-8">
+    <table class="table table-bordered table-responsive">
+      <tr>
+        <th>จำนวนเงินที่ได้รับ</th>
+        <td>{{data_minor.cutoff|intcomma}} บาท</td>
+      </tr>
+      {% for f in form %}
+      <tr>
+        <th>{{f.label}}</th>
+        <td>{{f.value|default_if_none:'-'}}</td>
+    </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div class = "col-sm-3">
+    <div class="d-grid gap-2">
+      <button class="btn btn-primary" formaction="{% url 'addform' data_minor.id %}"><i class="fas fa-edit"></i> แก้ไขข้อมูลหลัก</button>
+      {% if c.0 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform1' data_minor.id %}"><i class="fas fa-plus-circle"></i> 1. หลักการและเหตุผล <span class="badge bg-dark">{{c.0}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform1' data_minor.id %}"><i class="fas fa-plus-circle"></i> 1. หลักการและเหตุผล</button>
+      {% endif %}
+      {% if c.1 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform2' data_minor.id %}"><i class="fas fa-plus-circle"></i> 2. วัตถุประสงค์ <span class="badge bg-dark">{{c.1}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform2' data_minor.id %}"><i class="fas fa-plus-circle"></i> 2. วัตถุประสงค์</button>
+      {% endif %}
+      {% if c.2 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform3' data_minor.id %}"><i class="fas fa-plus-circle"></i> 3. เป้าหมาย <span class="badge bg-dark">{{c.2}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform3' data_minor.id %}"><i class="fas fa-plus-circle"></i> 3. เป้าหมาย</button>
+      {% endif %}
+      {% if c.3 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform4' data_minor.id %}"><i class="fas fa-plus-circle"></i> 4. วิธีการดำเนินงาน <span class="badge bg-dark">{{c.3}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform4' data_minor.id %}"><i class="fas fa-plus-circle"></i> 4. วิธีการดำเนินงาน</button>
+      {% endif %}
+      {% if c.4 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform5' data_minor.id %}"><i class="fas fa-plus-circle"></i> 5. รายละเอียดงบประมาณที่ใช้ <span class="badge bg-dark">{{c.4}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform5' data_minor.id %}"><i class="fas fa-plus-circle"></i> 5. รายละเอียดงบประมาณที่ใช้</button>
+      {% endif %}
+      {% if c.5 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform6' data_minor.id %}"><i class="fas fa-plus-circle"></i> 6. การประเมินผล <span class="badge bg-dark">{{c.5}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform6' data_minor.id %}"><i class="fas fa-plus-circle"></i> 6. การประเมินผล</button>
+      {% endif %}
+      {% if c.6 > 0 %}
+      <button class="btn btn-success" formaction="{% url 'addform7' data_minor.id %}"><i class="fas fa-plus-circle"></i> 7. ผลที่คาดว่าจะได้รับ <span class="badge bg-dark">{{c.6}}</span></button>
+      {% else %}
+      <button class="btn btn-danger" formaction="{% url 'addform7' data_minor.id %}"><i class="fas fa-plus-circle"></i> 7. ผลที่คาดว่าจะได้รับ</button>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+</form>
+</div>
+{% endlanguage %}
+{% endblock %}

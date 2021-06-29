@@ -1,0 +1,73 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page"><a>รายชื่อกิจกรรม</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container" align = "center">
+    <div align= "right">
+    <a class = "btn btn-primary  btn-sm" href="{% url 'export_users_csv' %}"><i class="fas fa-file-export"></i> Export CSV</a>
+  </div>
+<div class="m2">รายชื่อกิจกรรมทั้งหมด ปีการศึกษา 2564</div>
+<div>โรงเรียนการุ้งวิทยาคม สำนักงานเขตพื้นที่การศึกษามัธยมศึกษาอุทัยธานี ชัยนาท</div>
+<div class="table-responsive">
+<table class="table" id = "myTable">
+  <thead class="table-light">
+    <th>ที่</th>
+    <th>เลขที่กิจกรรม</th>
+    <th>ชื่อกิจกรรม</th>
+    <th>ผู้รับผิดชอบ</th>
+    <th>จำนวนเงิน</th>
+  </thead>
+  <tbody>
+    {% for m in minors %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{m.id}}</td>
+      <td>{{m.name}}</td>
+      <td>{{m.responsible}}</td>
+      <td>{{m.money|intcomma}}</td>
+    </tr>
+    {% empty %}
+    <td colspan="5" align="center">ไม่มีข้อมูล</td>
+    {% endfor%}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+{% endlanguage %}
+{% endblock %}

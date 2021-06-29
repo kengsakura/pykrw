@@ -1,0 +1,117 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'manage'  %}">จัดการระบบ</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a>เพิ่มครูที่ปรึกษา</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<h3>เพิ่มครูที่ปรึกษา</h3>
+<hr>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="row">
+  <div class="col">
+<form method="POST" action="">
+  {% csrf_token %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ที่</th>
+        <th>ชื่อ-นามสกุล</th>
+        <th>ระดับชั้น</th>
+        <th>ห้อง</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in data %}
+      <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{d.fname}} {{d.lname}}<input  name = "t_id" value="{{d.id}}" hidden></td>
+        {% if d.classroom %}
+        <td><input type="number" class="form-control" name = "classroom" value="{{d.classroom}}"></td>
+        {% else %}
+        <td><input type="number" class="form-control" name = "classroom"></td>
+        {% endif %}
+        {% if d.room %}
+        <td><input type="number" class="form-control" name = "room" value="{{d.room}}"></td>
+        {% else %}
+        <td><input type="number" class="form-control" name = "room"></td>
+        {% endif %}
+      </tr>
+      {% empty %}
+      <tr>
+        <td align = "center" colspan="2">ไม่มีข้อมูล</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<button type = "submit" class="btn btn-primary">บันทึก</button>
+</form>
+</div>
+<div class="col">
+<table class="table">
+  <thead>
+    <tr>
+      <th>ห้อง</th>
+      <th>ครูที่ปรึกษา</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for i in room %}
+    <tr>
+      <td>ม.{{i.classroom}}/{{i.room}}</td>
+      <td>
+      {% for j in i.teacher_name %}
+      {{forloop.counter}}. ครู{{j.0}} {{j.1}}<br>
+      {% empty %}
+      -
+      {% endfor %}
+    </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+{% endlanguage %}
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page"><a>เสนอใช้เงินกิจกรรม</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top" style="padding: 10px;">
+<h3>เสนอใช้เงินกิจกรรม ประจำปีการศึกษา 2564</h3>
+<hr>
+{% for message in messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<form class="needs-validation " id="the-form" novalidate method="post" action="">
+  <div class = "row g-3" style="padding: 10px;">
+  {% csrf_token %}
+  <div>{{ form.year.label}} {{ form.year}}</div>
+  <div>{{ form.name.label}} {{ form.name}}</div>
+  <div class = "col-sm-6">{{ form.branch.label}} {{ form.branch}}</div>
+  <div class = "col-sm-6">{{ form.detail.label}} {{ form.detail}}</div>
+  <div class = "col-sm-6">{{ form.date_start.label}} {{ form.date_start}}</div>
+  <div class = "col-sm-6">{{ form.date_end.label}} {{ form.date_end}}</div>
+  <div>{{ form.money.label}} {{ form.money}}</div>
+ <div align = "center">
+ <button class = "btn btn-primary" type = "submit">บันทึก</button>
+</div>
+</div>
+</form>
+</div>
+
+{% endblock %}

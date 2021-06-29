@@ -1,0 +1,186 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'checkminor' %}">ตรวจสอบกิจกรรม</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'usemoney' data.id %}">การใช้เงินกิจกรรม</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a >ขออนุมัติใช้เงินกิจกรรม</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top" style="padding: 10px;">
+<h3>ขออนุมัติใช้เงินกิจกรรม</h3>
+<hr>
+{% for message in messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+  <div class = "row g-3" style="padding: 10px;">
+    <div class = "row">
+      <div class="col-4" style="font-weight: bold;">กิจกรรม</div>
+      <div class="col-8" >{{data.name}}</div>
+      <div class="col-4" style="font-weight: bold;">ครั้งที่</div>
+      <div class="col-8">{{number.no}}</div>
+      <div class="col-4" style="font-weight: bold;">วันที่</div>
+      <div class="col-8">{{number.date}}</div>
+      <div class="col-4" style="font-weight: bold;color: red;">เงินที่ใช้ไป</div>
+      <div class="col-8" style="color: red;">{{current|intcomma}} บาท</div>
+      <div class="col-4" style="font-weight: bold;color: royalblue;">เงินคงเหลือ</div>
+      <div class="col-8" style="color: royalblue;">{{bal|intcomma}} บาท</div>
+    </div>
+    <div>    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-plus-square"></i> เพิ่ม</button></div>
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">รายละเอียดการใช้เงิน</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action = "" method="POST">
+          {% csrf_token %}
+          {{form|crispy}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead class="table-light">
+      <tr>
+        <th>ที่</th>
+        <th>รายการ</th>
+        <th>ราคาต่อหน่วย</th>
+        <th>จำนวน</th>
+        <th>หน่วย</th>
+        <th>ราคารวม</th>
+        <th>การดำเนินการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in ask %}
+      <tr>
+        <td>{{forloop.counter}}</td>
+        <td>{{a.detail}}</td>
+        <td>{{a.money|intcomma}}</td>
+        <td>{{a.count}}</td>
+        <td>{{a.unit}}</td>
+        <td>{{a.total|intcomma}}</td>
+        <td>
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editmodal{{a.id}}">แก้ไข</button>
+          <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delmodal{{a.id}}">ลบ</button>
+                        <!-- EditModal -->
+          <div class="modal fade" id="editmodal{{a.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">แก้ไข</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form action = "" method="POST">
+                    {% csrf_token %}
+                    <input hidden name ='how' value="edit">
+                    <input hidden name = 'askid' value = "{{a.id}}">
+                    <div>
+                    <label for = 'detail_e'>รายละเอียด</label>
+                    <input id = 'detail_e' name = 'detail_e' value="{{a.detail}}" class="form-control">
+                    </div>
+                    <div>
+                      <label for = 'count_e'>จำนวน</label>
+                      <input id = 'count_e' name = 'count_e' value="{{a.count}}" class="form-control">
+                      </div>
+                      <div>
+                        <label for = 'unit_e'>หน่วย</label>
+                        <input id = 'unit_e' name = 'unit_e' value="{{a.unit}}" class="form-control">
+                        </div>
+                        <div>
+                          <label for = 'money_e'>ราคาต่อหน่วย</label>
+                          <input id = 'money_e' name = 'money_e' value="{{a.money}}" class="form-control">
+                          </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                  <button type="submit" class="btn btn-primary">บันทึก</button>
+                </form>
+                </div>
+              </div>
+            </div>
+          </div>
+                      <!-- DelModal -->
+        <div class="modal fade" id="delmodal{{a.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">แจ้งเตือน</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                คุณต้องการลบใช่หรือไม่ ?
+                <form action = "" method="POST">
+                  {% csrf_token %}
+                  <input hidden name ='how' value="del">
+                  <input hidden name = 'askid' value = "{{a.id}}">
+                  <input hidden name = 'total_e' value = "{{a.total}}">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                <button type="submit" class="btn btn-primary">ใช่</button>
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">ไม่มีข้อมูล</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</div>
+{% endlanguage %}
+
+{% endblock %}

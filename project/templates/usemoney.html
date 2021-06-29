@@ -1,0 +1,154 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'checkminor' %}">ตรวจสอบกิจกรรม</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a >การใช้เงินกิจกรรม</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top" style="padding: 10px;">
+<h3>การใช้เงินกิจกรรม</h3>
+<hr>
+{% for message in messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
+  <div class = "row g-3" style="padding: 10px;">
+    <div class = "row">
+      <div class="col-4" style="font-weight: bold;">กิจกรรม</div>
+      <div class="col-8" >{{data.name}}</div>
+      <div class="col-4" style="font-weight: bold;">ผู้รับผิดชอบ</div>
+      <div class="col-8">{{data.responsible}}</div>
+      <div class="col-4" style="font-weight: bold;">ยอดเงินรวม</div>
+      <div class="col-8">{{data.money|intcomma}} บาท<ul>
+        <li>เงินอุดหนุน : {{data.money_1|intcomma}}</li>
+        <li>เงินกิจกรรมพัฒนาผู้เรียน : {{data.money_2|intcomma}}</li>
+        <li>เงินรายได้สถานศึกษา : {{data.money_3|intcomma}}</li>
+      </ul></div>
+      <div class="col-4" style="font-weight: bold;color: red;">เงินที่ใช้ไป</div>
+      <div class="col-8" style="color: red;">{{current|intcomma}} บาท</div>
+      <div class="col-4" style="font-weight: bold;color: royalblue;">เงินคงเหลือ</div>
+      <div class="col-8" style="color: royalblue;">{{bal|intcomma}} บาท</div>
+    </div>
+  <div>    <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fas fa-plus-square"></i> ขออนุมัติใช้เงิน</button></div>
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">ครั้งที่ขอ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action = "" method="POST">
+          {% csrf_token %}
+          {{form|crispy}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <button type="submit" class="btn btn-primary">บันทึก</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>ครั้งที่</th>
+            <th>วันที่</th>
+            <th>จำนวนเงิน</th>
+            <th>สถานะ</th>
+            <th>ดำเนินการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in number %}
+          <tr>
+            <td>{{n.no}}</td>
+            <td>{{n.date}}</td>
+            {% if n.money %}
+            <td>{{n.money|intcomma}} บาท</td>
+            {% else %}
+            <td>0 บาท</td>
+            {% endif %}
+            {% if n.status == '0' %}
+            <td style="color: blue;"><i class="far fa-clock"></i> รออนุมัติ</td>
+            {% else %}
+            <td style="color: green;"><i class="far fa-check-circle"></i> อนุมัติแล้ว</td>
+            {% endif %}
+            <td>
+              <a href = "{% url 'ask' n.minor_id n.no %}" class="btn btn-primary">ดู</a>
+              <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#delmodal{{n.id}}">ลบ</button>
+              <a class="btn btn-info" target="_blank" href = "{% url 'ask_pdf' n.id %}">พิมพ์</a>
+                                 <!-- DelModal -->
+        <div class="modal fade" id="delmodal{{n.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">แจ้งเตือน</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                คุณต้องการลบใช่หรือไม่ ?
+                <form action = "" method="POST">
+                  {% csrf_token %}
+                  <input hidden name ='how' value="del">
+                  <input hidden name = 'askid' value = "{{n.id}}">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                <button type="submit" class="btn btn-primary">ใช่</button>
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+            </td>
+          </tr>
+          {% empty %}
+      <tr><td colspan="5">ไม่มีข้อมูล</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+</div>
+{% endlanguage %}
+{% endblock %}

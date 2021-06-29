@@ -1,0 +1,66 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active"><a >ตรวจสอบกิจกรรม</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top ">
+<h3>ตรวจสอบกิจกรรม</h3>
+<hr>
+<h5>ผู้รับผิดชอบ {{request.session.user.1}}{{request.session.user.2}} {{request.session.user.3}}</h5>
+<form>
+<div class="row align-items-center">
+
+{% for d in data_minor %}
+<div class="col-sm-4">
+<div class="calloutblue">
+  <div>
+    <div class="row">
+      <div class="col-sm">
+        <h5 class="m2"><span class="badge bg-secondary ">{{forloop.counter}}</span> {{d.name}}</h5>
+        <p><i class="fas fa-coins"></i><span class="m1">  จำนวนเงิน</span> {{d.money|intcomma}} บาท</p>
+      </div>
+    </div>
+    <button class="btn btn-primary" formaction = "{% url 'detailminor' d.id %}"><i class="fas fa-eye"></i> ดูรายละเอียด</button>
+    <button class="btn btn-danger" formaction = "{% url 'usemoney' d.id %}"><i class="fas fa-hand-holding-usd"></i> การใช้เงิน</button>
+    <button disabled class="btn btn-secondary" formaction = "{% url 'addpdf' d.id %}"><i class="fas fa-file-pdf"></i> สร้างไฟล์</button>
+  </div>
+  </div>
+</div>
+{% endfor %}
+
+</div>
+</form>
+</div>
+
+{% endblock %}

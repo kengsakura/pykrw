@@ -1,0 +1,96 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .subtext{
+      font-family: 'Mitr', sans-serif;
+      font-size: 14px;
+
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+  </style>
+<div class = "card" style="padding: 10px;">
+<h3>ระบบแผนงาน</h3>
+<hr>
+{% for message in messages %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="callout">
+<div style="padding-left: 10px;">
+  <h5 class="m2">กำหนดการเสนอใช้เงิน</h5>
+  <p><i class="fas fa-volume-down"></i><span class="m1">  เสนอใช้เงิน</span> ตั้งแต่วันที่ 8 - 15 พฤษภาคม พ.ศ. 2564</p>
+  <p><i class="fas fa-volume-down"></i><span class="m1">  ตรวจสอบผลการอนุมัติ</span> วันที่ 17 พฤษภาคม พ.ศ. 2564</p>
+  </div>
+</div>
+</div>
+<br>
+<div class ="row mb-2">
+  <div class ="col-sm-3 mb-2">
+<div class = "card creport" style="background-color: rgb(122, 59, 173);">
+  <div class = "card-body">
+<h1><b>{{dashlist.0}}</b></h1>
+<h5 class="subtext">โครงการ</h5>
+</div>
+<div align = "center" style = "background-color: rgb(80, 35, 139);" class="card-footer">
+<a>จำนวนโครงการทั้งหมด</a>
+</div>
+</div>
+</div>
+<div class ="col-sm-3 mb-2">
+  <div class = "card creport bg-success">
+    <div class = "card-body">
+    <h1><b>{{dashlist.1}}</b></h1>
+    <h5 class="subtext">กิจกรรม</h5>
+  </div>
+    <div align = "center" style = "background-color: rgb(18, 87, 58);" class="card-footer">
+    <a>จำนวนกิจกรรมทั้งหมด</a>
+  </div>
+  </div>
+  </div>
+    <div class ="col-sm-3 mb-2">
+      <div class = "card creport bg-primary">
+        <div class = "card-body">
+        <h1><b>{{dashlist.2|intcomma}}</b></h1>
+        <h5 class="subtext">({{allmoney}})</h5>
+        </div>
+        <div align = "center" style = "background-color: rgb(36, 84, 155);" class="card-footer">
+          <a>ยอดเงินกิจกรรมทั้งหมด</a>
+        </div>
+      </div>
+      </div>
+    <div class ="col-sm-3 mb-2">
+      <div class = "card creport bg-danger">
+        <div class = "card-body">
+        <h1><b>{{dashlist.3|intcomma}}</b></h1>
+        <h5 class="subtext">({{total}})</h5>
+        </div>
+        <div align = "center" style = "background-color: rgb(165, 41, 41);" class="card-footer">
+          <a>ยอดเงินที่ใช้</a>
+        </div>
+      </div>
+      </div>
+</div>
+<br>
+{% endblock %}

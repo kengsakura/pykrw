@@ -1,0 +1,147 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'checkminor' %}">ตรวจสอบกิจกรรม</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'detailminor' data_minor.id %}">รายละเอียดกิจกรรม</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><a>เพิ่มหลักการและเหตุผล</a></li>
+    </ol>
+  </nav>
+<div class = "card callout-top ">
+<h3>เพิ่มหลักการและเหตุผล</h3>
+<h5>กิจกรรม {{data_minor.name}}</h5>
+<hr>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<form method="post" action="">
+  {% csrf_token %}
+<div class="row">
+  <div>{{form}}</div>
+<div>
+  <br>
+  <button type = "submit" class="btn btn-primary">เพิ่ม</button>
+</div>
+</div>
+</form>
+<hr>
+{% if ob %}
+
+<div class="table-responsive">
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th scope="col">ย่อหน้า</th>
+      <th scope="col">รายละเอียด</th>
+      <th scope="col">การดำเนินการ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for o in ob %}
+    <tr>
+      <th scope="row">{{o.order}}</th>
+      <td>{{o.detail}}</td>
+      <td>
+        <div class="d-grid gap-2 d-md-block">
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#edit{{o.id}}">แก้ไข</button>
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#del{{o.id}}">ลบ</button>
+      </div>
+      <!-- Modal Edit -->
+<div class="modal fade" id="edit{{o.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">แก้ไข</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="">
+          {% csrf_token %}
+          <input value="edit" name="how" hidden>
+          <input value="{{o.id}}" name="id_e" hidden>
+        <div>
+          {{form.order.label}}
+          <input type="number" class="form-control" name = "order_e" value="{{o.order}}">
+        </div>
+        <div>
+          {{form.detail.label}}
+          <input type="text" class="form-control" name = "detail_e" value="{{o.detail}}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+        <button type="submit" class="btn btn-primary">บันทึกการแก้ไข</button>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END Edit -->
+      <!-- Modal DEL -->
+      <div class="modal fade" id="del{{o.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">แจ้งเตือน</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="POST" action="">
+                {% csrf_token %}
+                <input value="del" name="how" hidden>
+                <input value="{{o.id}}" name="id_e" hidden>
+                คุณต้องการลบใช่หรือไม่ ?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+              <button type="submit" class="btn btn-warning">ใช่</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END DEL -->
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+</div>
+{% endlanguage %}
+{% endblock %}

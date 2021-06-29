@@ -1,0 +1,128 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item active" aria-current="page"><a>รายการใช้เงินทั้งหมด</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<div class="card-header"><h3>รายการใช้เงินทั้งหมด</h3></div>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="table-responsive">
+<table class="table table-hover " id = "myTable">
+  <thead class="table-light">
+    <tr>
+      <th>ที่</th>
+      <th>วันที่ขอ</th>
+      <th>ชื่อกิจกรรม</th>
+      <th>ครั้งที่ขอ</th>
+      <th>จำนวนเงิน</th>
+      <th>สถานะ</th>
+      <th>ดำเนินการ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in c %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{n.date}}</td>
+      <td>{{n.new_name}}<br><button class="btn btn-light btn-sm">{{n.res}}</button></td>
+      <td>{{n.no}}</td>
+      <td>{{n.money|intcomma}}</td>
+      {% if n.status == '0' %}
+      <td>รออนุมัติ</td>
+      {% else %}
+      <td>อนุมัติแล้ว</td>
+      {% endif %}
+      <td>
+        <button class = "btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal{{n.id}}">รายละเอียด</button>
+        <!-- Modal -->
+<div class="modal fade" id="exampleModal{{n.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">รายละเอียด</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>ที่</th>
+                <th>รายละเอียด</th>
+                <th>ราคาต่อหน่วย</th>
+                <th>จำนวน</th>
+                <th>ราคารวม</th>
+              </tr>
+            </thead>
+            <tbody>
+        {% for i in n.subact%}
+        <tr>
+          <td>{{forloop.counter}}</td>
+          <td>{{i.0}}</td>
+          <td>{{i.1|intcomma}}</td>
+          <td>{{i.2}}</td>
+          <td>{{i.3|intcomma}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">ไม่มีข้อมูล</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+
+{% endlanguage %}
+{% endblock %}

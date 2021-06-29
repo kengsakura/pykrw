@@ -1,0 +1,132 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'manage'  %}">จัดการระบบ</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a>อนุมัติการใช้เงิน</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<div class="card-header"><h3>รออนุมัติ</h3></div>
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="table-responsive ">
+<table class="table table-hover" id = "myTable" >
+  <thead class="table-light">
+    <tr>
+      <th>ที่</th>
+      <th>ชื่อกิจกรรม</th>
+      <th>ครั้งที่ขอ</th>
+      <th>วันที่ขอ</th>
+      <th>จำนวนเงิน</th>
+      <th>สถานะ</th>
+      <th>ดำเนินการ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in nc %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{n.new_name}}<br><button class="btn btn-primary btn-sm">{{n.res}}</button></td>
+      <td>{{n.no}}</td>
+      <td>{{n.date}}</td>
+      <td>{{n.money|intcomma}}</td>
+      {% if n.status == '0' %}
+      <td>รออนุมัติ</td>
+      {% else %}
+      <td>อนุมัติแล้ว</td>
+      {% endif %}
+      <td>
+        <a class = "btn btn-primary" href = "{% url 'confirm_2' n.id %}">ดู</a>
+        <a class = "btn btn-danger" href = "{% url 'del_confirm' n.id %}">ลบ</a>
+        <a class="btn btn-info" target="_blank" href = "{% url 'ask_pdf' n.id %}">พิมพ์</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">ไม่มีข้อมูล</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<br>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<div class="card-header"><h3>อนุมัติแล้ว</h3></div>
+<div class="table-responsive">
+<table class="table table-hover myTable">
+  <thead class="table-light">
+    <tr>
+      <th>ที่</th>
+      <th>ชื่อกิจกรรม</th>
+      <th>ครั้งที่ขอ</th>
+      <th>วันที่ขอ</th>
+      <th>จำนวนเงิน</th>
+      <th>สถานะ</th>
+      <th>ดำเนินการ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for n in c %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{n.new_name}}<br><button class="btn btn-primary btn-sm">{{n.res}}</button></td>
+      <td>{{n.no}}</td>
+      <td>{{n.date}}</td>
+      <td>{{n.money|intcomma}}</td>
+      {% if n.status == '0' %}
+      <td>รออนุมัติ</td>
+      {% else %}
+      <td>อนุมัติแล้ว</td>
+      {% endif %}
+      <td>
+        <a class = "btn btn-primary" href = "{% url 'confirm_2' n.id %}">ดู</a>
+        <a class = "btn btn-danger" href = "{% url 'del_confirm' n.id %}">ลบ</a>
+        <a class="btn btn-info" target="_blank" href = "{% url 'ask_pdf' n.id %}">พิมพ์</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+{% endlanguage %}
+{% endblock %}

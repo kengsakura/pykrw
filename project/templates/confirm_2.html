@@ -1,0 +1,84 @@
+{% extends 'layout.html'%}
+{% block content %}
+{% load static %}
+{% load humanize %}
+{% load i18n thaidate %}
+{% language 'th' %}
+<style>
+    a{
+      text-decoration: none;
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
+    h3{
+        font-family: 'Mitr', sans-serif;
+    }
+    .m1{
+    font-weight: bold;
+    color: rgb(192, 15, 15);
+}
+.m2{
+    font-weight: bold;
+    font-size: 18;
+    color: rgb(87, 20, 163);
+}
+.header {
+  font-weight: bold;
+    font-size: 16;
+    color: rgb(14, 22, 97);
+}
+
+  </style>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'manage'  %}">จัดการระบบ</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'confirm'  %}">อนุมัติการใช้เงิน</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a>รายละเอียด</a></li>
+  </ol>
+</nav>
+<div class = "card callout-top ">
+  <div class = "container-fluid" align = "center">
+<h3>รายละเอียดการใช้เงิน</h3>
+<hr>
+
+{% for msg in messages %}
+<div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+  {{msg}} 
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+<div class="table-responsive">
+<table class="table">
+  <thead class="table-light">
+    <tr>
+      <th>ที่</th>
+      <th>รายละเอียด</th>
+      <th>ราคาต่อหน่วย</th>
+      <th>จำนวน</th>
+      <th>ราคารวม</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in usedata %}
+    <tr>
+      <td>{{forloop.counter}}</td>
+      <td>{{u.detail}}</td>
+      <td>{{u.money|intcomma}}</td>
+      <td>{{u.count}} {{u.unit}}</td>
+      <td>{{u.total|intcomma}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<form method="POST">
+  {% csrf_token %}
+  <input value = "{{numberofuse.id}}" name = "id" hidden>
+  <button class = "btn btn-primary" formaction = "">อนุมัติ</button>
+</form>
+</div>
+</div>
+</div>
+{% endlanguage %}
+{% endblock %}
